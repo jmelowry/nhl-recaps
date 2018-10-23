@@ -14,18 +14,16 @@ import dateparser
 import abbreviations
 
 class NhlRecaps:
+    """gets a list of games, and recaps the game"""
 
     def __init__(self):
         pp = pprint.PrettyPrinter(indent=4)
         soup = self.make_soup()
         self.video_descriptions = self.get_video_descriptions(soup)
         self.video_urls = self.get_video_urls(soup)
-
         self.game_recaps = self.combine_data(self.video_descriptions,self.video_urls)
-        pp.pprint(self.game_recaps)
-
-        #pp.pprint(self.video_descriptions)
-        #pp.pprint(self.video_urls)
+        self.total_results = self.get_total_results(soup).text
+        
 
     def make_soup(self):
         """loads the recaps page, and creates bs4 soup"""
@@ -45,6 +43,10 @@ class NhlRecaps:
         soup = BeautifulSoup(inner_html, 'html.parser')
 
         return soup
+
+    def get_total_results(self,soup):
+
+        return soup.find('span', {'class': 'video-search__results__total'})
 
     def get_video_descriptions(self, soup):
         """get descriptions"""
@@ -69,8 +71,16 @@ class NhlRecaps:
     def analyze_url(self, url):
         """gets some data based on a video url"""
         split = url.split('-')
-        home_team = abbreviations.translate_code(split[1])
-        away_team = abbreviations.translate_code(split[3])
+
+        # in case the team isn't found in translate function
+        try:
+            home_team = abbreviations.translate_code(split[1])
+        except:
+            home_team = split[1]
+        try:
+            away_team = abbreviations.translate_code(split[3])
+        except:
+            away_team = split[3]
         score = split[2] + '-' + split[4].split('/')[0]
 
         return home_team, away_team, score
@@ -101,12 +111,7 @@ class NhlRecaps:
 
 
 if __name__ == '__main__':
-
-    todays_games = NhlRecaps()
-
-    #SOUP = make_soup()
-    # print(len(get_video_descriptions(SOUP)))
-    # print(len(get_video_urls(SOUP)))
-    # print(analyze_url('https://www.nhl.com/video/recap-stl-4-tor-1/c-62039403?tag=content&tagValue=gameRecap'))
-    # print(analyze_date('Ovechkin powers Caps past Canucks with four points  03:43 • Oct 22, 2018'))
-    # print(analyze_description('Ovechkin powers Caps past Canucks with four points  03:43 • Oct 22, 2018'))
+    pp = pprint.PrettyPrinter(indent=4)
+    games = NhlRecaps()
+    pp.pprint(games.game_recaps)
+    pp.pprint(games.total_results)
