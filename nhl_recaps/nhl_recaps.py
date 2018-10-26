@@ -18,12 +18,16 @@ class NhlRecaps:
 
     def __init__(self):
         pp = pprint.PrettyPrinter(indent=4)
-        soup = self.make_soup()
+
+        # use premade_soup function for testing. (does not make api call)
+        #soup = self.make_soup()
+        soup = self.premade_soup()
+
         self.video_descriptions = self.get_video_descriptions(soup)
         self.video_urls = self.get_video_urls(soup)
         self.game_recaps = self.combine_data(self.video_descriptions,self.video_urls)
         self.total_results = self.get_total_results(soup).text
-        
+
 
     def make_soup(self):
         """loads the recaps page, and creates bs4 soup"""
@@ -40,9 +44,24 @@ class NhlRecaps:
 
         driver.get(recap_url)
         inner_html = driver.execute_script("return document.body.innerHTML")
+
+        # f = open('output.html','w')
+        # f.write(inner_html)
+        # f.close()
+
         soup = BeautifulSoup(inner_html, 'html.parser')
 
         return soup
+
+    def premade_soup(self):
+        """used for testing. Grabs soup.html from local path"""
+
+        inner_html = open('soup.html', 'r')
+
+        soup = BeautifulSoup(inner_html, 'html.parser')
+
+        return soup
+
 
     def get_total_results(self,soup):
 
@@ -108,6 +127,12 @@ class NhlRecaps:
             combined_data.append([game_date, home_team, away_team, game_description, game_score, url])
 
         return combined_data
+
+    def write_soup_file(self, soup):
+        f = open('output.html','wb')
+        f.write(soup.prettify("utf-8"))
+        f.close()
+        print('soup saved as output.html')
 
 
 if __name__ == '__main__':
