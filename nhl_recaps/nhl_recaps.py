@@ -3,6 +3,8 @@
 """"Gets a list of recent game recaps"""
 
 import os
+import sys
+import logging
 import time
 from datetime import date
 from selenium import webdriver
@@ -20,22 +22,32 @@ class NhlRecaps:
         pp = pprint.PrettyPrinter(indent=4)
 
         # use premade_soup function for testing. (does not make api call)
-        #soup = self.make_soup()
-        soup = self.premade_soup()
+        soup = self.make_soup()
+        #soup = self.premade_soup()
 
         self.video_descriptions = self.get_video_descriptions(soup)
         self.video_urls = self.get_video_urls(soup)
         self.game_recaps = self.combine_data(self.video_descriptions,self.video_urls)
-        self.total_results = self.get_total_results(soup).text
+        self.page_results = self.get_page_results(soup)
+        self.total_results = self.get_total_results(soup)
 
 
     def make_soup(self):
         """loads the recaps page, and creates bs4 soup"""
+        def scroll(direction):
+            """does some scrolling to get the full page. directions can be up/down"""
+            if direction.upper() == 'UP':
+                driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+            elif direction.upper() == 'DOWN':
+                driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.END)
+            else:
+                logging.error('unrecognized scroll direction entered')
+
         service = webdriver.chrome.service.Service(
             '/usr/local/bin/chromedriver')
         service.start()
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
         chrome_options.binary_location = '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
         driver = webdriver.Remote(
             service.service_url, desired_capabilities=chrome_options.to_capabilities())
@@ -43,6 +55,12 @@ class NhlRecaps:
         recap_url = 'https://www.nhl.com/video/search/content/gameRecap'
 
         driver.get(recap_url)
+
+        time.sleep(5)
+        scroll('down')
+        time.sleep(3)
+        scroll('up')
+
         inner_html = driver.execute_script("return document.body.innerHTML")
 
         # f = open('output.html','w')
@@ -64,8 +82,14 @@ class NhlRecaps:
 
 
     def get_total_results(self,soup):
+        """gets total results"""
 
-        return soup.find('span', {'class': 'video-search__results__total'})
+        return soup.find('span', {'class': 'video-search__results__total'}).text
+
+    def get_page_results(self,soup):
+        """gets the number of results on page"""
+
+        return soup.find('span', {'class': 'video-search__results__from'}).text
 
     def get_video_descriptions(self, soup):
         """get descriptions"""
@@ -100,6 +124,7 @@ class NhlRecaps:
             away_team = abbreviations.translate_code(split[3])
         except:
             away_team = split[3]
+
         score = split[2] + '-' + split[4].split('/')[0]
 
         return home_team, away_team, score
@@ -124,19 +149,27 @@ class NhlRecaps:
             home_team = self.analyze_url(url)[0]
             away_team = self.analyze_url(url)[1]
             game_score = self.analyze_url(url)[2]
-            combined_data.append([game_date, home_team, away_team, game_description, game_score, url])
+            combined_data.append([game_date,
+                                  home_team,
+                                  away_team,
+                                  game_description,
+                                  game_score,
+                                  url])
+
 
         return combined_data
 
-    def write_soup_file(self, soup):
-        f = open('output.html','wb')
-        f.write(soup.prettify("utf-8"))
-        f.close()
-        print('soup saved as output.html')
+    # def write_soup_file(self, soup):
+    #     f = open('output.html','wb')
+    #     f.write(soup.prettify("utf-8"))
+    #     f.close()
+    #     print('soup saved as output.html')
 
 
 if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=4)
     games = NhlRecaps()
     pp.pprint(games.game_recaps)
+    #print(len(games.game_recaps))
+    pp.pprint(games.page_results)
     pp.pprint(games.total_results)
