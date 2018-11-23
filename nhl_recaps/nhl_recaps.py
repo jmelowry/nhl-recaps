@@ -56,18 +56,30 @@ class NhlRecaps:
 
         driver.get(recap_url)
 
-        time.sleep(5)
-        scroll('down')
-        time.sleep(3)
-        scroll('up')
+
 
         inner_html = driver.execute_script("return document.body.innerHTML")
+        soup = BeautifulSoup(inner_html, 'html.parser')
+
+        page_results = self.get_page_results(soup)
+        print(page_results)
+        total_results = self.get_total_results(soup)
+        print(total_results)
+
+        # while True:
+        #     print(len(page_results))
+        #     len(page_results) >= 30
+        #     time.sleep(5)
+        #     scroll('down')
+        #     time.sleep(5)
+        #     scroll('up')
+
 
         # f = open('output.html','w')
         # f.write(inner_html)
         # f.close()
 
-        soup = BeautifulSoup(inner_html, 'html.parser')
+
 
         return soup
 
