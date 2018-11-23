@@ -25,7 +25,15 @@ class RecapDb:
         self.c.executemany('INSERT INTO recaps VALUES (?,?,?,?,?)', value)
         self.conn.commit()
 
+    def search_value(self, value):
+        query = self.c.execute("SELECT * FROM recaps where date = ?", (value,))
+        rows = query.fetchall()
+        for row in rows:
+            print(row)
+            # if row[0] == value:
+            #     print(row[0])
 
 if __name__ == '__main__':
     data = RecapDb('recaps.db')
-    data.insert_value([('11/1/2018', 'ducks', 'rangers', 'sad game', '3-2')])
+    data.insert_value([('11/4/2018', 'ducks', 'rangers', 'sad game', '3-2')])
+    data.search_value("11/2/2018")
