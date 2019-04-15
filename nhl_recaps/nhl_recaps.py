@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-""""Gets a list of recent game recaps"""
+"""Gets a list of recent game recaps"""
 
 import os
 import sys
