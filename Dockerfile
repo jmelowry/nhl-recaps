@@ -9,7 +9,7 @@ RUN apk update
 RUN apk add --update chromium chromium-chromedriver python-dev py-pip build-base
 
 # install selenium
-RUN pip install selenium==3.13.0
+RUN pip install selenium
 
 RUN mkdir -p /nhl_recaps
 ADD . /nhl_recaps
