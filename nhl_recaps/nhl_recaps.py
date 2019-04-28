@@ -13,7 +13,7 @@ from selenium.webdriver.chrome.options import Options
 import pprint
 from bs4 import BeautifulSoup
 import dateparser
-import abbreviations
+import nhl_recaps.abbreviations
 
 class NhlRecaps:
     """gets a list of games, and recaps the game"""
@@ -177,11 +177,19 @@ class NhlRecaps:
     #     f.close()
     #     print('soup saved as output.html')
 
-
-if __name__ == '__main__':
+def main():
     pp = pprint.PrettyPrinter(indent=4)
     games = NhlRecaps()
     pp.pprint(games.game_recaps)
-    #print(len(games.game_recaps))
     pp.pprint(games.page_results)
     pp.pprint(games.total_results)
+
+
+if __name__ == '__main__':
+    main()
+    # pp = pprint.PrettyPrinter(indent=4)
+    # games = NhlRecaps()
+    # pp.pprint(games.game_recaps)
+    # #print(len(games.game_recaps))
+    # pp.pprint(games.page_results)
+    # pp.pprint(games.total_results)
