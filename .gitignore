@@ -1,6 +1,6 @@
-__pycache__
-*.html
-nhl_recaps/__pycache__
-.DS_Store
-.coverage
+dist
+build
+*.pyc
+.egg-info
 *.db
+venv
