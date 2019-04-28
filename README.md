@@ -8,4 +8,4 @@ Grabs the most recent recaps from nhl.com, and provides a direct link to the vid
 2. Run `python setup.py install`
 
 ### Usage
-run nhl-recaps after installing
+`nhl-recaps`
