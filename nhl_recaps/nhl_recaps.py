@@ -47,7 +47,10 @@ class NhlRecaps:
             '/usr/local/bin/chromedriver')
         service.start()
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        
+        # comment out the following line to view chromedriver interaction
+        chrome_options.add_argument("--headless")
+        
         chrome_options.binary_location = '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
         driver = webdriver.Remote(
             service.service_url, desired_capabilities=chrome_options.to_capabilities())
