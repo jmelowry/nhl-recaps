@@ -13,7 +13,7 @@ from selenium.webdriver.chrome.options import Options
 import pprint
 from bs4 import BeautifulSoup
 import dateparser
-import nhl_recaps.abbreviations
+import abbreviations
 
 class NhlRecaps:
     """gets a list of games, and recaps the game"""
@@ -65,9 +65,9 @@ class NhlRecaps:
         soup = BeautifulSoup(inner_html, 'html.parser')
 
         page_results = self.get_page_results(soup)
-        print(page_results)
+        #print(page_results)
         total_results = self.get_total_results(soup)
-        print(total_results)
+        #print(total_results)
 
         # while True:
         #     print(len(page_results))
@@ -173,7 +173,17 @@ class NhlRecaps:
 
 
         return combined_data
-
+    
+    def html_output(self):
+        """processes game list"""
+        html_output = ["<h1>Game Recaps</h1>"]
+        for game in self.game_recaps:
+            html_output.append("<h2>{0}</h2>".format(game[0]))
+            html_output.append("<h3>{0} vs {1}</h3>".format(game[1], game[2]))
+            html_output.append("<p><a href='{0}', alt='{1}'>Video Link</a></p>".format(game[5], game[4]))
+        
+        self.html_output = html_output
+        
     # def write_soup_file(self, soup):
     #     f = open('output.html','wb')
     #     f.write(soup.prettify("utf-8"))
@@ -189,9 +199,18 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    #for game in NhlRecaps().game_recaps:
+    #    print(game)
+    
     # pp = pprint.PrettyPrinter(indent=4)
-    # games = NhlRecaps()
+    games = NhlRecaps()
+    games.html_output()
+    
+    with open('recaps.html', 'w') as file:
+        for line in games.html_output:
+            file.write(line)
+
     # pp.pprint(games.game_recaps)
     # #print(len(games.game_recaps))
     # pp.pprint(games.page_results)
